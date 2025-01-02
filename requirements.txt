@@ -1,0 +1,7 @@
+streamlit
+pymongo
+bcrypt
+plotly
+matplotlib
+pandas
+datetime
