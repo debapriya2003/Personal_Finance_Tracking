@@ -359,22 +359,17 @@ def home_page():
         )
         date_filter = selected_date.strftime("%Y-%m-%d")
         pipeline = [{"$match": {"user_id": st.session_state.user_id, "date": {"$regex": f"^{date_filter}"}}}]
-
-        # For Date-Wise, there's no year-specific data
-        year_filter = None
+        year_filter = None  # Not applicable for Date-Wise view
 
     elif view_type == "Year-Wise":
-        # Fetch distinct years from transaction dates
         years = transactions_collection.distinct("date", {"user_id": st.session_state.user_id})
         years = sorted(set(date[:4] for date in years))  # Extract unique years
         if not years:
             st.warning("No transactions found to select a year.")
             return
-
-        # Dropdown for selecting the year
         selected_year = st.selectbox("Select a Year", years, index=0)
         pipeline = [{"$match": {"user_id": st.session_state.user_id, "date": {"$regex": f"^{selected_year}"}}}]
-        year_filter = selected_year  # Track the selected year for category-wise expenses
+        year_filter = selected_year  # For Year-Wise view
 
     # Aggregate data for income and expenses
     pipeline.append({"$group": {"_id": "$type", "total": {"$sum": "$amount"}}})
@@ -389,7 +384,7 @@ def home_page():
     total_expenses = sum(item["total"] for item in report if item["_id"] == "expense")
     savings = total_income - total_expenses
 
-    # Use columns to create 3 cards side by side
+    # Create and display summary cards
     col1, col2, col3 = st.columns(3)
 
     with col1:
@@ -416,23 +411,28 @@ def home_page():
         </div>
         """, unsafe_allow_html=True)
 
-    # Category-wise expenses (only for Year-Wise view)
-    if view_type == "Year-Wise":
-        category_pipeline = [
-            {"$match": {"user_id": st.session_state.user_id, "type": "expense", "date": {"$regex": f"^{year_filter}"}}},
-            {"$group": {"_id": "$category", "total": {"$sum": "$amount"}}},
-            {"$sort": {"total": -1}}
-        ]
-        category_report = list(transactions_collection.aggregate(category_pipeline))
+    # Create Pie Chart
+    pie_labels = ["Income", "Expenses"]
+    pie_values = [total_income, total_expenses]
+    pie_fig, pie_ax = plt.subplots(figsize=(6, 6))
+    pie_ax.pie(pie_values, labels=pie_labels, autopct='%1.1f%%', startangle=140, colors=["#4CAF50", "#FF5733"])
+    pie_ax.set_title("Income vs Expenses Distribution")
 
-        if category_report:
-            categories = [item["_id"] for item in category_report]
-            expenses = [item["total"] for item in category_report]
-            df = pd.DataFrame({"Category": categories, "Expense": expenses})
-            fig = px.bar(df, x="Category", y="Expense", title="Category-wise Expenses")
-            st.plotly_chart(fig)
-        else:
-            st.write("No category-wise expense data available.")
+    # Create Bar Chart
+    bar_categories = ["Income", "Expenses"]
+    bar_values = [total_income, total_expenses]
+    bar_df = pd.DataFrame({"Category": bar_categories, "Amount": bar_values})
+    bar_fig = px.bar(bar_df, x="Category", y="Amount", title="Income vs Expenses", text="Amount",
+                     color="Category", color_discrete_map={"Income": "#4CAF50", "Expenses": "#FF5733"})
+
+    # Display Pie and Bar Charts side by side
+    col4, col5 = st.columns(2)
+
+    with col4:
+        st.pyplot(pie_fig)
+
+    with col5:
+        st.plotly_chart(bar_fig, use_container_width=True)
 
     # Transaction Table
     transactions = list(transactions_collection.find(
@@ -446,6 +446,7 @@ def home_page():
         st.dataframe(transaction_df)  # Display in a tabular format
     else:
         st.write("No transactions found for the selected period.")
+
         # Add delete buttons for removing expenses and user account
     col6, col7 = st.columns(2)
 
