@@ -27,6 +27,7 @@ Here is a table summarizing the key technologies and libraries used in the proje
 | **Plotly**               | Used for generating interactive bar charts       | [Plotly Docs](https://plotly.com/python/) |
 | **Pandas**               | Data manipulation for transaction data           | [Pandas Docs](https://pandas.pydata.org/) |
 | **Python 3.x**           | Programming language                             | [Python](https://www.python.org/) |
+| **datetime**             | Handling dates and times                         | [datetime Docs](https://docs.python.org/3/library/datetime.html) |
 | **Heroku (Optional)**    | For deploying the app to the cloud               | [Heroku](https://www.heroku.com/) |
 | **bcrypt**               | Password hashing and authentication             | [bcrypt Docs](https://pypi.org/project/bcrypt/) |
 
@@ -72,14 +73,14 @@ The app generates the following visualizations to help users understand their fi
 This pie chart shows the proportion of income versus expenses, helping users easily understand their financial status for the current month.
 
 Example:
-![Pie Chart](Personal_finance_tracking_system/pie_chart.png)
+![Pie Chart](pie_chart.png)
 
 ### 2. **Category-wise Expenses Bar Chart** 📊
 
 This bar chart helps users see which categories are consuming the most of their income, providing a clear breakdown.
 
 Example:
-![Bar Chart](Personal_finance_tracking_system/bar_chart.png)
+![Bar Chart](bar_chart.png)
 
 ---
 
