@@ -142,10 +142,7 @@ We welcome contributions! If you'd like to improve the app or add new features, 
 ## 📱 Contact & Support
 
 For support or feedback, you can reach out through the following channels:
-
-- **GitHub Issues**: [Submit an issue](https://github.com/yourusername/personal-finance-dashboard/issues)
 - **Email**: debapriyamukherjee2003@gmail.com
-- **Twitter**: [@yourusername](https://twitter.com/yourusername)
 
 ---
 
